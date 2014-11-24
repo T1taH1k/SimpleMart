@@ -3,9 +3,9 @@
 <%@page session="true" %>
 <html>
 <body>
-<h1>Title : ${title}</h1>
+<h3>Title : ${title}</h3>
 
-<h1>Message : ${message}</h1>
+<h3>Message : ${message}</h3>
 
 <c:url value="/j_spring_security_logout" var="logoutUrl"/>
 <form action="${logoutUrl}" method="post" id="logoutForm">
@@ -13,43 +13,19 @@
            value="${_csrf.token}"/>
 </form>
 
-<form:form method="GET" action="add" commandName="user">
+<form:form method="GET" action="add" commandName="product">
 
     <table>
         <tr>
-            <td>Username</td>
-            <td><form:input path="username"/></td>
+            <td>Name</td>
+            <td><form:input path="name"/></td>
         </tr>
         <tr>
-            <td>Password</td>
-            <td><form:input path="password"/></td>
+            <td>Price</td>
+            <td><form:input path="price"/></td>
         </tr>
         <tr>
-            <td>Lastname</td>
-            <td><form:input path="lastname"/></td>
-        </tr>
-        <tr>
-            <td>Firstname</td>
-            <td><form:input path="firstname"/></td>
-        </tr>
-        <tr>
-            <td>Email</td>
-            <td><form:input path="email"/></td>
-        </tr>
-        <tr>
-            <td>Phone</td>
-            <td><form:input path="phone"/></td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <select name="roleCheck" id="roleCheck">
-                    <option value="USER" selected="selected">USER</option>
-                    <option value="ADMIN">ADMIN</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2"><input type="submit" value="Add User"/></td>
+            <td colspan="2"><input type="submit" value="Add Product"/></td>
         </tr>
     </table>
 </form:form>
@@ -58,30 +34,28 @@
     <table>
         <tr>
             <input type="text" id="snippet" name="snippet"/>
-            <td colspan="2"><input type="submit" value="Search by username or phone"/></td>
+            <td colspan="2"><input type="submit" value="Search by name"/></td>
         </tr>
     </table>
 </form:form>
 
-<h3>Users list:</h3>
-<c:if test="${!empty userList}">
+<h3>Product list:</h3>
+<c:if test="${!empty productList}">
     <table class="data">
         <tr>
-            <th>Username</th>
+            <th>Id</th>
             <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
+            <th>Price</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
         </tr>
-        <c:forEach items="${userList}" var="user">
+        <c:forEach items="${productList}" var="product">
             <tr>
-                <td>${user.username}</td>
-                <td>${user.lastname}, ${user.firstname}</td>
-                <td>${user.email}</td>
-                <td>${user.phone}</td>
-                <td><a href="delete/${user.username}">Delete</a></td>
-                <td><a href="edit/${user.username}">Edit</a></td>
+                <td>${product.good_id}</td>
+                <td>${product.name}</td>
+                <td>${product.price}</td>
+                <td><a href="delete/${product.good_id}">Delete</a></td>
+                <td><a href="edit/${product.name}">Edit</a></td>
             </tr>
         </c:forEach>
     </table>

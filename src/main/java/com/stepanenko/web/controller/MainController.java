@@ -1,7 +1,7 @@
 package com.stepanenko.web.controller;
 
-import com.stepanenko.DAO.UserDAO;
-import com.stepanenko.logic.User;
+import com.stepanenko.logic.Product;
+import com.stepanenko.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,24 +21,25 @@ import java.util.Map;
 public class MainController {
 
     @Autowired
-    private UserDAO userDAO;
+    private ProductService productService;
 
     @RequestMapping(value = {"/", "/welcome**"}, method = RequestMethod.GET)
-    public ModelAndView defaultPage() {
+    public ModelAndView defaultPage(Map<String, Object> map) {
 
-        ModelAndView model = new ModelAndView();
+        List allProducts = productService.getAllProducts();
+        ModelAndView model = getModelAndView(map, allProducts, new Product());
         model.addObject("title", "Spring Security Login Form - Database Authentication");
-        model.addObject("message", "This is default page!");
+        model.addObject("message", "This is default page");
         model.setViewName("hello");
         return model;
 
     }
 
     @RequestMapping(value = "/admin**", method = RequestMethod.GET)
-    public ModelAndView adminPage(Map<String, Object> map) throws SQLException {
+    public ModelAndView adminPage(Map<String, Object> map) {
 
-        List allUsers = userDAO.getAllUsers();
-        ModelAndView model = getModelAndView(map, allUsers, new User());
+        List allProducts = productService.getAllProducts();
+        ModelAndView model = getModelAndView(map, allProducts, new Product());
 
         model.setViewName("admin");
 
@@ -46,12 +47,12 @@ public class MainController {
 
     }
 
-    private ModelAndView getModelAndView(Map<String, Object> map, List allUsers, User user) {
+    private ModelAndView getModelAndView(Map<String, Object> map, List allProducts, Product product) {
         ModelAndView model = new ModelAndView();
         model.addObject("title", "Spring Security Login Form - Database Authentication");
-        model.addObject("message", "This page is for ROLE_ADMIN only!");
-        map.put("userList", allUsers);
-        map.put("user", user);
+        model.addObject("message", "This page is for ROLE_ADMIN only");
+        map.put("productList", allProducts);
+        map.put("product", product);
         return model;
     }
 
@@ -75,7 +76,7 @@ public class MainController {
 
     //for 403 access denied page
     @RequestMapping(value = "/403", method = RequestMethod.GET)
-    public ModelAndView accesssDenied() {
+    public ModelAndView accessDenied() {
 
         ModelAndView model = new ModelAndView();
 
@@ -95,30 +96,25 @@ public class MainController {
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.GET)
-    public String addContact(@ModelAttribute("user") User user,
+    public String addContact(@ModelAttribute("product") Product product,
                              BindingResult result, HttpServletRequest request) throws SQLException {
-        String role = request.getParameter("roleCheck");
-        if (role.equals("USER")) {
-            userDAO.addUser(user);
-        } else {
-            userDAO.addAdmin(user);
-        }
+            productService.addProduct(product);
         return "redirect:/admin";
     }
 
-    @RequestMapping("/delete/{username}")
-    public String deleteUser(@PathVariable("username") String username) throws SQLException {
+    @RequestMapping("/delete/{good_id}")
+    public String deleteProduct(@PathVariable("good_id") int good_id) throws SQLException {
 
-        userDAO.deleteUser(username);
+        productService.deleteProduct(good_id);
 
         return "redirect:/admin";
     }
 
-    @RequestMapping("/edit/{username}")
-    public String editPage(@PathVariable("username") String username, Map<String, Object> map) throws SQLException {
+    @RequestMapping("/edit/{name}")
+    public String editPage(@PathVariable("name") String name, Map<String, Object> map) throws SQLException {
 
-        List allUsers = userDAO.getAllUsers();
-        ModelAndView model = getModelAndView(map, allUsers, userDAO.search(username).get(0));
+        List allProducts = productService.getAllProducts();
+        ModelAndView model = getModelAndView(map, allProducts, productService.search(name).get(0));
 
         model.setViewName("admin");
 
@@ -129,15 +125,15 @@ public class MainController {
     public ModelAndView search(HttpServletRequest request, Map<String, Object> map) throws SQLException {
 
         String snippet = request.getParameter("snippet");
-        List foundUsers;
+        List foundProducts;
         if (snippet == null || snippet.equals("")) {
-            foundUsers = userDAO.getAllUsers();
+            foundProducts = productService.getAllProducts();
         } else {
-            foundUsers = userDAO.search(snippet);
+            foundProducts = productService.search(snippet);
         }
 
 
-        ModelAndView model = getModelAndView(map, foundUsers, new User());
+        ModelAndView model = getModelAndView(map, foundProducts, new Product());
         model.setViewName("admin");
 
         return model;
@@ -145,9 +141,9 @@ public class MainController {
     }
 
     @RequestMapping(value = "edit/update", method = RequestMethod.GET)
-    public String updatePage(@ModelAttribute("user") User user, BindingResult result) throws SQLException {
+    public String updatePage(@ModelAttribute("product") Product product, BindingResult result) throws SQLException {
 
-        userDAO.updateUser(user);
+        productService.updateProduct(product);
         return "redirect:/admin";
     }
 

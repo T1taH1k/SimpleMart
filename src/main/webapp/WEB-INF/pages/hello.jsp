@@ -3,9 +3,34 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <body>
-<h1>Title : ${title}</h1>
+<h3>Title : ${title}</h3>
 
-<h1>Message : ${message}</h1>
+<h3>Message : ${message}</h3>
+<form>
+    <h3>Product list:</h3>
+    <c:if test="${!empty productList}">
+        <table class="data">
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Price</th>
+            </tr>
+            <c:forEach items="${productList}" var="product">
+                <tr>
+                    <td>${product.good_id}</td>
+                    <td>${product.name}</td>
+                    <td>${product.price}</td>
+                </tr>
+            </c:forEach>
+        </table>
+    </c:if>
+</form>
+
+<c:if test="${pageContext.request.userPrincipal.name == null}">
+    <h2>
+        <a href="<c:url value="login"/>">Login Page</a>
+    </h2>
+</c:if>
 
 <sec:authorize access="hasRole('ROLE_USER')">
     <!-- For login user -->
@@ -14,6 +39,7 @@
         <input type="hidden" name="${_csrf.parameterName}"
                value="${_csrf.token}"/>
     </form>
+
     <script>
         function formSubmit() {
             document.getElementById("logoutForm").submit();
